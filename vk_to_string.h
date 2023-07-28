@@ -1,3 +1,7 @@
+// Vulkan enums captured in macros, which you can define to do anything you want before including this file.
+// If you don't define the macros before including this, their default definitions create functions to convert the enums to strings.
+// 		e.g. const char* VkSampleCountFlags_str(const char* label, VkSampleCountFlags value) {...return value in string form...}
+
 #ifndef VULKAN_ENUM_BEGIN
 #pragma warning(disable:4996)
 #define VULKAN_ENUM_BEGIN(TYPE, PREFIX, BITFIELD) static const char* TYPE ## _str(const char* label, TYPE value) {static char tmp[1024]; char* ptr=tmp; auto prefix_len = strlen(#PREFIX); bool b=BITFIELD;
