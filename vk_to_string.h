@@ -4,11 +4,54 @@
 
 #ifndef VULKAN_ENUM_BEGIN
 #pragma warning(disable:4996)
-#define VULKAN_ENUM_BEGIN(TYPE, PREFIX, BITFIELD) static const char* TYPE ## _str(const char* label, TYPE value) {static char tmp[1024]; char* ptr=tmp; auto prefix_len = strlen(#PREFIX); bool b=BITFIELD;
+#define VULKAN_ENUM_BEGIN(TYPE, PREFIX, IS_BITFIELD) static const char* TYPE ## _str(const char* label, TYPE value) {static char tmp[1024]; char* ptr=tmp; auto prefix_len = strlen(#PREFIX); bool b=IS_BITFIELD;
 #define VULKAN_ENUM_ADD(VALUE) if ((b && ((value&VALUE)==VALUE)) || (!b && value==VALUE)) ptr += sprintf(ptr, "%s%s", ptr==tmp ? label:"|", #VALUE+prefix_len);
 #define VULKAN_ENUM_END return tmp;}
+#define VULKAN_POD(TYPE, FMT) static const char* TYPE ## _str(const char* label, TYPE value) {static char tmp[1024]; sprintf(tmp, "%s"FMT, label, value); return tmp;}
+#define VULKAN_STRUCT_BEGIN(TYPE) static const char* TYPE ## _str(const char* label, TYPE& obj) {static char tmp[1024]; char* ptr=tmp;
+#define VULKAN_STRUCT_VAL(TYPE, NAME) ptr += sprintf(ptr, "%s\n", TYPE ## _str(#NAME, obj.NAME));
+#define VULKAN_STRUCT_PTR(TYPE, NAME) ptr += sprintf(ptr, "%s\n", #NAME); if (obj.NAME) ptr += sprintf(ptr, "%s\n", TYPE ## _str("", (TYPE&)*obj.NAME));
+#define VULKAN_STRUCT_ARR(TYPE, NAME, COUNT) ptr += sprintf(ptr, "%s\n", #NAME); for (int i=0; i<(int)obj.COUNT; ++i) ptr += sprintf(ptr, "%s\n", TYPE ## _str("", (TYPE&)obj.NAME[i]));
+#define VULKAN_STRUCT_HANDLE(TYPE, NAME)
+#define VULKAN_STRUCT_HANDLE_ARR(TYPE, NAME, COUNT)
+#define VULKAN_STRUCT_STR(PTR)
+#define VULKAN_STRUCT_MEM(TYPE, PTR)
+#define VULKAN_STRUCT_END return tmp;}
 #define VK_TO_STRING(TYPE, VAR) TYPE ## _str(#VAR " = ", VAR)
 #endif
+
+// plain old data
+
+VULKAN_POD(int32_t, "%d")
+VULKAN_POD(uint32_t, "%u")
+VULKAN_POD(float, "%f")
+VULKAN_POD(bool, "%u")
+VULKAN_POD(size_t, "%zu")
+
+// enums
+
+VULKAN_ENUM_BEGIN(VkPipelineColorBlendStateCreateFlags, VK_PIPELINE_COLOR_BLEND_STATE_CREATE_, true)
+VULKAN_ENUM_ADD(VK_PIPELINE_COLOR_BLEND_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_BIT_EXT)
+VULKAN_ENUM_END
+
+VULKAN_ENUM_BEGIN(VkLogicOp, VK_LOGIC_OP_, false)
+VULKAN_ENUM_ADD(VK_LOGIC_OP_CLEAR)
+VULKAN_ENUM_ADD(VK_LOGIC_OP_AND)
+VULKAN_ENUM_ADD(VK_LOGIC_OP_AND_REVERSE)
+VULKAN_ENUM_ADD(VK_LOGIC_OP_COPY)
+VULKAN_ENUM_ADD(VK_LOGIC_OP_AND_INVERTED)
+VULKAN_ENUM_ADD(VK_LOGIC_OP_NO_OP)
+VULKAN_ENUM_ADD(VK_LOGIC_OP_XOR)
+VULKAN_ENUM_ADD(VK_LOGIC_OP_OR)
+VULKAN_ENUM_ADD(VK_LOGIC_OP_NOR)
+VULKAN_ENUM_ADD(VK_LOGIC_OP_EQUIVALENT)
+VULKAN_ENUM_ADD(VK_LOGIC_OP_INVERT)
+VULKAN_ENUM_ADD(VK_LOGIC_OP_OR_REVERSE)
+VULKAN_ENUM_ADD(VK_LOGIC_OP_COPY_INVERTED)
+VULKAN_ENUM_ADD(VK_LOGIC_OP_OR_INVERTED)
+VULKAN_ENUM_ADD(VK_LOGIC_OP_NAND)
+VULKAN_ENUM_ADD(VK_LOGIC_OP_SET)
+VULKAN_ENUM_END
 
 VULKAN_ENUM_BEGIN(VkRenderPassCreateFlags, VK_RENDER_PASS_CREATE_, true)
 VULKAN_ENUM_ADD(VK_RENDER_PASS_CREATE_TRANSFORM_BIT_QCOM)
@@ -221,6 +264,33 @@ VULKAN_ENUM_END
 VULKAN_ENUM_BEGIN(VkPipelineShaderStageCreateFlags, VK_PIPELINE_SHADER_STAGE_CREATE_, true)
 VULKAN_ENUM_ADD(VK_PIPELINE_SHADER_STAGE_CREATE_ALLOW_VARYING_SUBGROUP_SIZE_BIT)
 VULKAN_ENUM_ADD(VK_PIPELINE_SHADER_STAGE_CREATE_REQUIRE_FULL_SUBGROUPS_BIT)
+VULKAN_ENUM_END
+
+VULKAN_ENUM_BEGIN(VkPipelineDepthStencilStateCreateFlags, VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_, true)
+VULKAN_ENUM_ADD(VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_DEPTH_ACCESS_BIT_EXT)
+VULKAN_ENUM_ADD(VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_ATTACHMENT_STENCIL_ACCESS_BIT_EXT)
+VULKAN_ENUM_END
+
+VULKAN_ENUM_BEGIN(VkCompareOp, VK_COMPARE_OP_, false)
+VULKAN_ENUM_ADD(VK_COMPARE_OP_NEVER)
+VULKAN_ENUM_ADD(VK_COMPARE_OP_LESS)
+VULKAN_ENUM_ADD(VK_COMPARE_OP_EQUAL)
+VULKAN_ENUM_ADD(VK_COMPARE_OP_LESS_OR_EQUAL)
+VULKAN_ENUM_ADD(VK_COMPARE_OP_GREATER)
+VULKAN_ENUM_ADD(VK_COMPARE_OP_NOT_EQUAL)
+VULKAN_ENUM_ADD(VK_COMPARE_OP_GREATER_OR_EQUAL)
+VULKAN_ENUM_ADD(VK_COMPARE_OP_ALWAYS)
+VULKAN_ENUM_END
+
+VULKAN_ENUM_BEGIN(VkStencilOp, VK_STENCIL_OP_, false)
+VULKAN_ENUM_ADD(VK_STENCIL_OP_KEEP)
+VULKAN_ENUM_ADD(VK_STENCIL_OP_ZERO)
+VULKAN_ENUM_ADD(VK_STENCIL_OP_REPLACE)
+VULKAN_ENUM_ADD(VK_STENCIL_OP_INCREMENT_AND_CLAMP)
+VULKAN_ENUM_ADD(VK_STENCIL_OP_DECREMENT_AND_CLAMP)
+VULKAN_ENUM_ADD(VK_STENCIL_OP_INVERT)
+VULKAN_ENUM_ADD(VK_STENCIL_OP_INCREMENT_AND_WRAP)
+VULKAN_ENUM_ADD(VK_STENCIL_OP_DECREMENT_AND_WRAP)
 VULKAN_ENUM_END
 
 VULKAN_ENUM_BEGIN(VkVertexInputRate, VK_VERTEX_INPUT_RATE_, false)
@@ -485,3 +555,265 @@ VULKAN_ENUM_ADD(VK_FORMAT_ASTC_12x10_SRGB_BLOCK)
 VULKAN_ENUM_ADD(VK_FORMAT_ASTC_12x12_UNORM_BLOCK)
 VULKAN_ENUM_ADD(VK_FORMAT_ASTC_12x12_SRGB_BLOCK)
 VULKAN_ENUM_END
+
+VULKAN_ENUM_BEGIN(VkPipelineVertexInputStateCreateFlags, VK_, true)
+VULKAN_ENUM_END
+VULKAN_ENUM_BEGIN(VkPipelineInputAssemblyStateCreateFlags, VK_, true)
+VULKAN_ENUM_END
+VULKAN_ENUM_BEGIN(VkPipelineTessellationStateCreateFlags, VK_, true)
+VULKAN_ENUM_END
+VULKAN_ENUM_BEGIN(VkPipelineViewportStateCreateFlags, VK_, true)
+VULKAN_ENUM_END
+VULKAN_ENUM_BEGIN(VkPipelineRasterizationStateCreateFlags, VK_, true)
+VULKAN_ENUM_END
+VULKAN_ENUM_BEGIN(VkPipelineMultisampleStateCreateFlags, VK_, true)
+VULKAN_ENUM_END
+VULKAN_ENUM_BEGIN(VkPipelineDynamicStateCreateFlags, VK_, true)
+VULKAN_ENUM_END
+
+// structures
+
+VULKAN_STRUCT_BEGIN(VkAttachmentReference)
+VULKAN_STRUCT_VAL(uint32_t, attachment)
+VULKAN_STRUCT_VAL(VkImageLayout, layout)
+VULKAN_STRUCT_END
+
+VULKAN_STRUCT_BEGIN(VkAttachmentDescription)
+VULKAN_STRUCT_VAL(VkAttachmentDescriptionFlags, flags)
+VULKAN_STRUCT_VAL(VkFormat, format)
+VULKAN_STRUCT_VAL(VkSampleCountFlags, samples)
+VULKAN_STRUCT_VAL(VkAttachmentLoadOp, loadOp)
+VULKAN_STRUCT_VAL(VkAttachmentStoreOp, storeOp)
+VULKAN_STRUCT_VAL(VkAttachmentLoadOp, stencilLoadOp)
+VULKAN_STRUCT_VAL(VkAttachmentStoreOp, stencilStoreOp)
+VULKAN_STRUCT_VAL(VkImageLayout, initialLayout)
+VULKAN_STRUCT_VAL(VkImageLayout, finalLayout)
+VULKAN_STRUCT_END
+
+VULKAN_STRUCT_BEGIN(VkSubpassDescription)
+VULKAN_STRUCT_VAL(VkSubpassDescriptionFlags, flags)
+VULKAN_STRUCT_VAL(VkPipelineBindPoint, pipelineBindPoint)
+VULKAN_STRUCT_VAL(uint32_t, inputAttachmentCount)
+VULKAN_STRUCT_ARR(VkAttachmentReference, pInputAttachments, inputAttachmentCount)
+VULKAN_STRUCT_VAL(uint32_t, colorAttachmentCount)
+VULKAN_STRUCT_ARR(VkAttachmentReference, pColorAttachments, colorAttachmentCount)
+VULKAN_STRUCT_ARR(VkAttachmentReference, pResolveAttachments, colorAttachmentCount)
+VULKAN_STRUCT_PTR(VkAttachmentReference, pDepthStencilAttachment)
+VULKAN_STRUCT_VAL(uint32_t, preserveAttachmentCount)
+VULKAN_STRUCT_ARR(VkAttachmentReference, pPreserveAttachments, preserveAttachmentCount)
+VULKAN_STRUCT_END
+
+VULKAN_STRUCT_BEGIN(VkSubpassDependency)
+VULKAN_STRUCT_VAL(uint32_t, srcSubpass)
+VULKAN_STRUCT_VAL(uint32_t, dstSubpass)
+VULKAN_STRUCT_VAL(VkPipelineStageFlags, srcStageMask)
+VULKAN_STRUCT_VAL(VkPipelineStageFlags, dstStageMask)
+VULKAN_STRUCT_VAL(VkAccessFlags, srcAccessMask)
+VULKAN_STRUCT_VAL(VkAccessFlags, dstAccessMask)
+VULKAN_STRUCT_VAL(VkDependencyFlags, dependencyFlags)
+VULKAN_STRUCT_END
+
+VULKAN_STRUCT_BEGIN(VkRenderPassCreateInfo)
+VULKAN_STRUCT_VAL(VkRenderPassCreateFlags, flags)
+VULKAN_STRUCT_VAL(uint32_t, attachmentCount)
+VULKAN_STRUCT_ARR(VkAttachmentDescription, pAttachments, attachmentCount)
+VULKAN_STRUCT_VAL(uint32_t, subpassCount)
+VULKAN_STRUCT_ARR(VkSubpassDescription, pSubpasses, subpassCount)
+VULKAN_STRUCT_VAL(uint32_t, dependencyCount)
+VULKAN_STRUCT_ARR(VkSubpassDependency, pDependencies, dependencyCount)
+VULKAN_STRUCT_END
+
+VULKAN_STRUCT_BEGIN(VkPushConstantRange)
+VULKAN_STRUCT_VAL(VkShaderStageFlags, stageFlags)
+VULKAN_STRUCT_VAL(uint32_t, offset)
+VULKAN_STRUCT_VAL(uint32_t, size)
+VULKAN_STRUCT_END
+
+VULKAN_STRUCT_BEGIN(VkPipelineLayoutCreateInfo)
+VULKAN_STRUCT_VAL(VkPipelineLayoutCreateFlags, flags)
+VULKAN_STRUCT_VAL(uint32_t, setLayoutCount)
+VULKAN_STRUCT_HANDLE_ARR(VkDescriptorSetLayout, pSetLayouts, setLayoutCount)
+VULKAN_STRUCT_VAL(uint32_t, pushConstantRangeCount)
+VULKAN_STRUCT_ARR(VkPushConstantRange, pPushConstantRanges, pushConstantRangeCount)
+VULKAN_STRUCT_END
+
+VULKAN_STRUCT_BEGIN(VkDescriptorSetLayoutBinding)
+VULKAN_STRUCT_VAL(uint32_t, binding)
+VULKAN_STRUCT_VAL(VkDescriptorType, descriptorType)
+VULKAN_STRUCT_VAL(uint32_t, descriptorCount)
+VULKAN_STRUCT_VAL(VkShaderStageFlags, stageFlags)
+VULKAN_STRUCT_HANDLE_ARR(VkSampler, pImmutableSamplers, descriptorCount)
+VULKAN_STRUCT_END
+
+VULKAN_STRUCT_BEGIN(VkDescriptorSetLayoutCreateInfo)
+VULKAN_STRUCT_VAL(VkDescriptorSetLayoutCreateFlags, flags)
+VULKAN_STRUCT_VAL(uint32_t, bindingCount)
+VULKAN_STRUCT_HANDLE_ARR(VkDescriptorSetLayoutBinding, pBindings, bindingCount)
+VULKAN_STRUCT_END
+
+VULKAN_STRUCT_BEGIN(VkSpecializationMapEntry)
+VULKAN_STRUCT_VAL(uint32_t, constantID)
+VULKAN_STRUCT_VAL(uint32_t, offset)
+VULKAN_STRUCT_VAL(size_t, size)
+VULKAN_STRUCT_END
+
+VULKAN_STRUCT_BEGIN(VkSpecializationInfo)
+VULKAN_STRUCT_VAL(uint32_t, mapEntryCount)
+VULKAN_STRUCT_HANDLE_ARR(VkSpecializationMapEntry, pMapEntries, mapEntryCount)
+VULKAN_STRUCT_VAL(size_t, dataSize)
+VULKAN_STRUCT_MEM(void*, pData)
+VULKAN_STRUCT_END
+
+VULKAN_STRUCT_BEGIN(VkPipelineShaderStageCreateInfo)
+VULKAN_STRUCT_VAL(VkPipelineShaderStageCreateFlags, flags)
+VULKAN_STRUCT_VAL(VkShaderStageFlags, stage)
+VULKAN_STRUCT_HANDLE(VkShaderModule, module)
+VULKAN_STRUCT_STR(pName)
+VULKAN_STRUCT_HANDLE_ARR(VkSpecializationInfo, pSpecializationInfo, 1)
+VULKAN_STRUCT_END
+
+VULKAN_STRUCT_BEGIN(VkVertexInputBindingDescription)
+VULKAN_STRUCT_VAL(uint32_t, binding)
+VULKAN_STRUCT_VAL(uint32_t, stride)
+VULKAN_STRUCT_VAL(VkVertexInputRate, inputRate)
+VULKAN_STRUCT_END
+
+VULKAN_STRUCT_BEGIN(VkVertexInputAttributeDescription)
+VULKAN_STRUCT_VAL(uint32_t, location)
+VULKAN_STRUCT_VAL(uint32_t, binding)
+VULKAN_STRUCT_VAL(VkFormat, format)
+VULKAN_STRUCT_VAL(uint32_t, offset)
+VULKAN_STRUCT_END
+
+VULKAN_STRUCT_BEGIN(VkPipelineVertexInputStateCreateInfo)
+VULKAN_STRUCT_VAL(VkPipelineVertexInputStateCreateFlags, flags)
+VULKAN_STRUCT_VAL(uint32_t, vertexBindingDescriptionCount)
+VULKAN_STRUCT_HANDLE_ARR(VkVertexInputBindingDescription, pVertexBindingDescriptions, vertexBindingDescriptionCount)
+VULKAN_STRUCT_VAL(uint32_t, vertexAttributeDescriptionCount)
+VULKAN_STRUCT_HANDLE_ARR(VkVertexInputAttributeDescription, pVertexAttributeDescriptions, vertexAttributeDescriptionCount)
+VULKAN_STRUCT_END
+
+VULKAN_STRUCT_BEGIN(VkPipelineInputAssemblyStateCreateInfo)
+VULKAN_STRUCT_VAL(VkPipelineInputAssemblyStateCreateFlags, flags)
+VULKAN_STRUCT_VAL(VkPrimitiveTopology, topology)
+VULKAN_STRUCT_VAL(bool, primitiveRestartEnable)
+VULKAN_STRUCT_END
+
+VULKAN_STRUCT_BEGIN(VkPipelineTessellationStateCreateInfo)
+VULKAN_STRUCT_VAL(VkPipelineTessellationStateCreateFlags, flags)
+VULKAN_STRUCT_VAL(uint32_t, patchControlPoints)
+VULKAN_STRUCT_END
+
+VULKAN_STRUCT_BEGIN(VkViewport)
+VULKAN_STRUCT_VAL(float, x)
+VULKAN_STRUCT_VAL(float, y)
+VULKAN_STRUCT_VAL(float, width)
+VULKAN_STRUCT_VAL(float, height)
+VULKAN_STRUCT_VAL(float, minDepth)
+VULKAN_STRUCT_VAL(float, maxDepth)
+VULKAN_STRUCT_END
+
+VULKAN_STRUCT_BEGIN(VkOffset2D)
+VULKAN_STRUCT_VAL(int32_t, x)
+VULKAN_STRUCT_VAL(int32_t, y)
+VULKAN_STRUCT_END
+
+VULKAN_STRUCT_BEGIN(VkExtent2D)
+VULKAN_STRUCT_VAL(uint32_t, width)
+VULKAN_STRUCT_VAL(uint32_t, height)
+VULKAN_STRUCT_END
+
+VULKAN_STRUCT_BEGIN(VkRect2D)
+VULKAN_STRUCT_HANDLE(VkOffset2D, offset)
+VULKAN_STRUCT_HANDLE(VkExtent2D, extent)
+VULKAN_STRUCT_END
+
+VULKAN_STRUCT_BEGIN(VkPipelineViewportStateCreateInfo)
+VULKAN_STRUCT_VAL(VkPipelineViewportStateCreateFlags, flags)
+VULKAN_STRUCT_VAL(uint32_t, viewportCount)
+VULKAN_STRUCT_HANDLE_ARR(VkViewport, pViewports, viewportCount)
+VULKAN_STRUCT_VAL(uint32_t, scissorCount)
+VULKAN_STRUCT_HANDLE_ARR(VkRect2D, pScissors, scissorCount)
+VULKAN_STRUCT_END
+
+VULKAN_STRUCT_BEGIN(VkPipelineRasterizationStateCreateInfo)
+VULKAN_STRUCT_VAL(VkPipelineRasterizationStateCreateFlags, flags)
+VULKAN_STRUCT_VAL(bool, depthClampEnable)
+VULKAN_STRUCT_VAL(bool, rasterizerDiscardEnable)
+VULKAN_STRUCT_VAL(VkPolygonMode, polygonMode)
+VULKAN_STRUCT_VAL(VkCullModeFlags, cullMode)
+VULKAN_STRUCT_VAL(VkFrontFace, frontFace)
+VULKAN_STRUCT_VAL(bool, depthBiasEnable)
+VULKAN_STRUCT_VAL(float, depthBiasConstantFactor)
+VULKAN_STRUCT_VAL(float, depthBiasClamp)
+VULKAN_STRUCT_VAL(float, depthBiasSlopeFactor)
+VULKAN_STRUCT_VAL(float, lineWidth)
+VULKAN_STRUCT_END
+
+VULKAN_STRUCT_BEGIN(VkPipelineMultisampleStateCreateInfo)
+VULKAN_STRUCT_VAL(VkPipelineMultisampleStateCreateFlags, flags)
+VULKAN_STRUCT_VAL(VkSampleCountFlags, rasterizationSamples)
+VULKAN_STRUCT_VAL(bool, sampleShadingEnable)
+VULKAN_STRUCT_VAL(float, minSampleShading)
+//const VkSampleMask* pSampleMask;
+VULKAN_STRUCT_VAL(bool, alphaToCoverageEnable)
+VULKAN_STRUCT_VAL(bool, alphaToOneEnable)
+VULKAN_STRUCT_END
+
+VULKAN_STRUCT_BEGIN(VkStencilOpState)
+VULKAN_STRUCT_VAL(VkStencilOp, failOp)
+VULKAN_STRUCT_VAL(VkStencilOp, passOp)
+VULKAN_STRUCT_VAL(VkStencilOp, depthFailOp)
+VULKAN_STRUCT_VAL(VkCompareOp, compareOp)
+VULKAN_STRUCT_VAL(uint32_t, compareMask)
+VULKAN_STRUCT_VAL(uint32_t, writeMask)
+VULKAN_STRUCT_VAL(uint32_t, reference)
+VULKAN_STRUCT_END
+
+VULKAN_STRUCT_BEGIN(VkPipelineDepthStencilStateCreateInfo)
+VULKAN_STRUCT_VAL(VkPipelineDepthStencilStateCreateFlags, flags)
+VULKAN_STRUCT_VAL(bool, depthTestEnable)
+VULKAN_STRUCT_VAL(bool, depthWriteEnable)
+VULKAN_STRUCT_VAL(VkCompareOp, depthCompareOp)
+VULKAN_STRUCT_VAL(bool, depthBoundsTestEnable)
+VULKAN_STRUCT_VAL(bool, stencilTestEnable)
+VULKAN_STRUCT_VAL(VkStencilOpState, front)
+VULKAN_STRUCT_VAL(VkStencilOpState, back)
+VULKAN_STRUCT_VAL(float, minDepthBounds)
+VULKAN_STRUCT_VAL(float, maxDepthBounds)
+VULKAN_STRUCT_END
+
+VULKAN_STRUCT_BEGIN(VkPipelineColorBlendStateCreateInfo)
+VULKAN_STRUCT_VAL(VkPipelineColorBlendStateCreateFlags, flags)
+VULKAN_STRUCT_VAL(bool, logicOpEnable)
+VULKAN_STRUCT_VAL(VkLogicOp, logicOp)
+VULKAN_STRUCT_VAL(uint32_t, attachmentCount)
+//const VkPipelineColorBlendAttachmentState*    pAttachments;
+VULKAN_STRUCT_PTR(float, blendConstants)
+VULKAN_STRUCT_END
+
+VULKAN_STRUCT_BEGIN(VkPipelineDynamicStateCreateInfo)
+VULKAN_STRUCT_VAL(VkPipelineDynamicStateCreateFlags, flags)
+VULKAN_STRUCT_VAL(uint32_t, dynamicStateCount)
+//const VkDynamicState*                pDynamicStates;
+VULKAN_STRUCT_END
+
+VULKAN_STRUCT_BEGIN(VkGraphicsPipelineCreateInfo)
+VULKAN_STRUCT_VAL(VkPipelineCreateFlags, flags)
+VULKAN_STRUCT_VAL(uint32_t, stageCount)
+VULKAN_STRUCT_ARR(VkPipelineShaderStageCreateInfo, pStages, stageCount)
+VULKAN_STRUCT_PTR(VkPipelineVertexInputStateCreateInfo, pVertexInputState)
+VULKAN_STRUCT_PTR(VkPipelineInputAssemblyStateCreateInfo, pInputAssemblyState)
+VULKAN_STRUCT_PTR(VkPipelineTessellationStateCreateInfo, pTessellationState)
+VULKAN_STRUCT_PTR(VkPipelineViewportStateCreateInfo, pViewportState)
+VULKAN_STRUCT_PTR(VkPipelineRasterizationStateCreateInfo, pRasterizationState)
+VULKAN_STRUCT_PTR(VkPipelineMultisampleStateCreateInfo, pMultisampleState)
+VULKAN_STRUCT_PTR(VkPipelineDepthStencilStateCreateInfo, pDepthStencilState)
+VULKAN_STRUCT_PTR(VkPipelineColorBlendStateCreateInfo, pColorBlendState)
+VULKAN_STRUCT_PTR(VkPipelineDynamicStateCreateInfo, pDynamicState)
+VULKAN_STRUCT_HANDLE(VkPipelineLayout, layout)
+VULKAN_STRUCT_HANDLE(VkRenderPass, renderPass)
+VULKAN_STRUCT_VAL(uint32_t, subpass)
+VULKAN_STRUCT_HANDLE(VkPipeline, basePipelineHandle)
+VULKAN_STRUCT_VAL(uint32_t, basePipelineIndex)
+VULKAN_STRUCT_END
