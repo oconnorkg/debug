@@ -648,7 +648,7 @@ VULKAN_STRUCT_END
 VULKAN_STRUCT_BEGIN(VkDescriptorSetLayoutCreateInfo)
 VULKAN_STRUCT_VAL(VkDescriptorSetLayoutCreateFlags, flags)
 VULKAN_STRUCT_VAL(uint32_t, bindingCount)
-VULKAN_STRUCT_HANDLE_ARR(VkDescriptorSetLayoutBinding, pBindings, bindingCount)
+VULKAN_STRUCT_ARR(VkDescriptorSetLayoutBinding, pBindings, bindingCount)
 VULKAN_STRUCT_END
 
 VULKAN_STRUCT_BEGIN(VkSpecializationMapEntry)
@@ -659,7 +659,7 @@ VULKAN_STRUCT_END
 
 VULKAN_STRUCT_BEGIN(VkSpecializationInfo)
 VULKAN_STRUCT_VAL(uint32_t, mapEntryCount)
-VULKAN_STRUCT_HANDLE_ARR(VkSpecializationMapEntry, pMapEntries, mapEntryCount)
+VULKAN_STRUCT_ARR(VkSpecializationMapEntry, pMapEntries, mapEntryCount)
 VULKAN_STRUCT_VAL(size_t, dataSize)
 VULKAN_STRUCT_MEM(void*, pData)
 VULKAN_STRUCT_END
@@ -669,7 +669,7 @@ VULKAN_STRUCT_VAL(VkPipelineShaderStageCreateFlags, flags)
 VULKAN_STRUCT_VAL(VkShaderStageFlags, stage)
 VULKAN_STRUCT_HANDLE(VkShaderModule, module)
 VULKAN_STRUCT_STR(pName)
-VULKAN_STRUCT_HANDLE_ARR(VkSpecializationInfo, pSpecializationInfo, 1)
+VULKAN_STRUCT_PTR(VkSpecializationInfo, pSpecializationInfo)
 VULKAN_STRUCT_END
 
 VULKAN_STRUCT_BEGIN(VkVertexInputBindingDescription)
@@ -688,9 +688,9 @@ VULKAN_STRUCT_END
 VULKAN_STRUCT_BEGIN(VkPipelineVertexInputStateCreateInfo)
 VULKAN_STRUCT_VAL(VkPipelineVertexInputStateCreateFlags, flags)
 VULKAN_STRUCT_VAL(uint32_t, vertexBindingDescriptionCount)
-VULKAN_STRUCT_HANDLE_ARR(VkVertexInputBindingDescription, pVertexBindingDescriptions, vertexBindingDescriptionCount)
+VULKAN_STRUCT_ARR(VkVertexInputBindingDescription, pVertexBindingDescriptions, vertexBindingDescriptionCount)
 VULKAN_STRUCT_VAL(uint32_t, vertexAttributeDescriptionCount)
-VULKAN_STRUCT_HANDLE_ARR(VkVertexInputAttributeDescription, pVertexAttributeDescriptions, vertexAttributeDescriptionCount)
+VULKAN_STRUCT_ARR(VkVertexInputAttributeDescription, pVertexAttributeDescriptions, vertexAttributeDescriptionCount)
 VULKAN_STRUCT_END
 
 VULKAN_STRUCT_BEGIN(VkPipelineInputAssemblyStateCreateInfo)
@@ -724,16 +724,16 @@ VULKAN_STRUCT_VAL(uint32_t, height)
 VULKAN_STRUCT_END
 
 VULKAN_STRUCT_BEGIN(VkRect2D)
-VULKAN_STRUCT_HANDLE(VkOffset2D, offset)
-VULKAN_STRUCT_HANDLE(VkExtent2D, extent)
+VULKAN_STRUCT_VAL(VkOffset2D, offset)
+VULKAN_STRUCT_VAL(VkExtent2D, extent)
 VULKAN_STRUCT_END
 
 VULKAN_STRUCT_BEGIN(VkPipelineViewportStateCreateInfo)
 VULKAN_STRUCT_VAL(VkPipelineViewportStateCreateFlags, flags)
 VULKAN_STRUCT_VAL(uint32_t, viewportCount)
-VULKAN_STRUCT_HANDLE_ARR(VkViewport, pViewports, viewportCount)
+VULKAN_STRUCT_ARR(VkViewport, pViewports, viewportCount)
 VULKAN_STRUCT_VAL(uint32_t, scissorCount)
-VULKAN_STRUCT_HANDLE_ARR(VkRect2D, pScissors, scissorCount)
+VULKAN_STRUCT_ARR(VkRect2D, pScissors, scissorCount)
 VULKAN_STRUCT_END
 
 VULKAN_STRUCT_BEGIN(VkPipelineRasterizationStateCreateInfo)
